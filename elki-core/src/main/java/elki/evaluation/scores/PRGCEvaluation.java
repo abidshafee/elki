@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import elki.math.geometry.XYCurve;
 import elki.result.Metadata;
 import elki.utilities.optionhandling.Parameterizer;
+
 /**
  * Compute the area under the precision-recall-gain curve
  * <p>
@@ -77,7 +78,7 @@ public class PRGCEvaluation implements ScoreEvaluation {
       if(rank == prevrank) {
         continue;
       }
-      
+
       final int newpos = pos - prevpos, ties = rank - prevrank;
       posnotfound -= newpos;
       // Interpolation based on Davis and Goadrich (class: AUPRCEval..)
@@ -92,15 +93,15 @@ public class PRGCEvaluation implements ScoreEvaluation {
         if(recG >= 0) {
           slices.add(recG * preG);
         }
-        if(/*preG >= 0 &&*/ recG >= 0) {
+        if(preG >= 0 && recG >= 0) {
           curve.addAndSimplify(0, preG);
           curve.addAndSimplify(recG, preG);
         }
         continue;
       }
-      
+
       assert (prevpos + prevposnotfound == amountPositiveIDs);
-      
+
       double recGp = 1 - (pi / (1 - pi)) * (prevposnotfound / (double) prevpos);
       double preGp = 1 - (pi / (1 - pi)) * ((prevrank - prevpos) / (double) prevpos);
 
@@ -116,9 +117,9 @@ public class PRGCEvaluation implements ScoreEvaluation {
           double width = recG - recGp;
           double height = (preG + preGp) / 2;
           slices.add(width * height);
-          // if(preG >=0) {
-          curve.addAndSimplify(recG, preG);
-          // }
+          if(preG >= 0) {
+            curve.addAndSimplify(recG, preG);
+          }
         }
         recGp = recG;
         preGp = preG;
@@ -165,7 +166,7 @@ public class PRGCEvaluation implements ScoreEvaluation {
       if(rank == prevrank) {
         continue;
       }
-      
+
       final int newpos = pos - prevpos, ties = rank - prevrank;
       posnotfound -= newpos;
       // Interpolation based on Davis and Goadrich (class: AUPRCEval..)
@@ -182,9 +183,9 @@ public class PRGCEvaluation implements ScoreEvaluation {
         }
         continue;
       }
-      
+
       assert (prevpos + prevposnotfound == amountPositiveIDs);
-      
+
       double recGp = 1 - (pi / (1 - pi)) * (prevposnotfound / (double) prevpos);
       double preGp = 1 - (pi / (1 - pi)) * ((prevrank - prevpos) / (double) prevpos);
 
