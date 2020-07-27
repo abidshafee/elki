@@ -57,6 +57,11 @@ public abstract class AbstractVectorIter implements ScoreEvaluation.Adapter, Arr
    * Number of positive examples in the vector.
    */
   protected int numPositive;
+  
+  /**
+   * Number of all examples in the vector.
+   */
+  protected int numTotal;
 
   /**
    * Constructor.
@@ -71,6 +76,7 @@ public abstract class AbstractVectorIter implements ScoreEvaluation.Adapter, Arr
       if(positive.doubleValue(i) > 0) {
         ++numPositive;
       }
+      ++numTotal;
     }
   }
 
@@ -130,5 +136,10 @@ public abstract class AbstractVectorIter implements ScoreEvaluation.Adapter, Arr
   @Override
   public int numPositive() {
     return numPositive;
+  }
+  
+  @Override
+  public int numTotal() {
+    return numTotal;
   }
 }
