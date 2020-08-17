@@ -67,6 +67,16 @@ public class XYCurve {
       maxy = Double.NEGATIVE_INFINITY;
 
   /**
+   * Drawing bounds for x
+   */
+  protected double mindx = 0.0, maxdx = 1.0;
+
+  /**
+   * Drawing bounds for y
+   */
+  protected double mindy = 0.0, maxdy = 1.0;
+
+  /**
    * Constructor with labels
    *
    * @param labelx Label for X axis
@@ -231,6 +241,42 @@ public class XYCurve {
   }
 
   /**
+   * Lower drawing bound on x axis.
+   *
+   * @return lower drawing bound on X
+   */
+  public double getMindx() {
+    return mindx;
+  }
+
+  /**
+   * upper drawing bound on x axis.
+   *
+   * @return upper drawing bound on X
+   */
+  public double getMaxdx() {
+    return maxdx;
+  }
+
+  /**
+   * Lower drawing bound on y axis.
+   *
+   * @return lower drawing bound on Y
+   */
+  public double getMindy() {
+    return mindy;
+  }
+
+  /**
+   * Upper drawing bound on y axis.
+   *
+   * @return upper drawing bound on Y
+   */
+  public double getMaxdy() {
+    return maxdy;
+  }
+
+  /**
    * Curve X value at given position
    *
    * @param off Offset
@@ -280,6 +326,37 @@ public class XYCurve {
     this.miny = miny;
     this.maxx = maxx;
     this.maxy = maxy;
+  }
+
+  /**
+   * Set the drawing bounds of the plot.
+   *
+   * @param mindx lower drawing x
+   * @param mindy lower drawing y
+   * @param maxdx upper drawing x
+   * @param maxdy upper drawing y
+   */
+  public void setDrawingBounds(double mindx, double mindy, double maxdx, double maxdy) {
+    this.minx = mindx;
+    this.miny = mindy;
+    this.maxx = maxdx;
+    this.maxy = maxdy;
+  }
+
+  /**
+   * Checks if a point is inside the drawing bounds of this curve
+   * 
+   * @param it Iterator describing the point
+   * @return whether the point is in the drawing bounds
+   */
+  public boolean isInDrawingBounds(Itr it) {
+    if(it.getX() > maxdx || it.getX() < mindx) {
+      return false;
+    }
+    if(it.getY() > maxdy || it.getY() < mindy) {
+      return false;
+    }
+    return true;
   }
 
   /**
