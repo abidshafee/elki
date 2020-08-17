@@ -20,10 +20,9 @@
  */
 package elki.evaluation.scores;
 
-import java.util.LinkedList;
-
 import elki.math.geometry.XYCurve;
 import elki.result.Metadata;
+import elki.utilities.documentation.Reference;
 import elki.utilities.optionhandling.Parameterizer;
 
 /**
@@ -38,6 +37,11 @@ import elki.utilities.optionhandling.Parameterizer;
  * @author Robert Gehde
  *
  */
+@Reference(authors = "P. Flach and M. Knull", //
+    title = "Precision-Recall-Gain Curves: PR Analysis Done Right", //
+    booktitle = "Advances in Neural Information Processing Systems 28 (NIPS 2015)", //
+    url = "https://papers.nips.cc/paper/5867-precision-recall-gain-curves-pr-analysis-done-right", //
+    bibkey = "")
 public class PRGCEvaluation implements ScoreEvaluation {
   /**
    * Static instance
@@ -68,6 +72,7 @@ public class PRGCEvaluation implements ScoreEvaluation {
     while(adapter.valid()) {
       final int prevpos = pos, prevrank = rank;
       double prevpreG = preG, prevrecG = recG;
+      boolean dontSimplify = false;
       // positive or negative match?
       do {
         if(adapter.test()) {
@@ -137,23 +142,30 @@ public class PRGCEvaluation implements ScoreEvaluation {
         double x = prevrecG + (-prevpreG) / (preG - prevpreG) * (recG - prevrecG);
         double alpha = .5;
         if(newpos > 0) {
-          alpha = (amountPositiveIDs * amountPositiveIDs / (adapter.numTotal() - (adapter.numTotal()-amountPositiveIDs) * x) - prevpos) / newpos;
-        }else{
-          alpha = ((adapter.numTotal()-amountPositiveIDs) / (adapter.numTotal()-amountPositiveIDs) * prevpos - (prevrank - prevpos)) / ((rank-prevrank)-newpos);
+          alpha = (amountPositiveIDs * amountPositiveIDs / (adapter.numTotal() - (adapter.numTotal() - amountPositiveIDs) * x) - prevpos) / newpos;
+        }
+        else {
+          alpha = ((adapter.numTotal() - amountPositiveIDs) / (adapter.numTotal() - amountPositiveIDs) * prevpos - (prevrank - prevpos)) / ((rank - prevrank) - newpos);
         }
         // new = pre + delta*alhpa
         double ttp = prevpos + alpha * newpos;
         double tfn = amountPositiveIDs - ttp;
-        double temprecG = 1. - (amountPositiveIDs/(double)(adapter.numTotal()-amountPositiveIDs)) * (tfn/ttp);
-        
+        double temprecG = 1. - (amountPositiveIDs / (double) (adapter.numTotal() - amountPositiveIDs)) * (tfn / ttp);
+
         curve.addAndSimplify(temprecG, 0);
         acc += calcSliceArea(prevrecG, temprecG, prevpreG, 0);
-        
+
+        dontSimplify = true;
         prevpreG = 0;
         prevrecG = temprecG;
       }
       // add the new point
-      curve.addAndSimplify(recG, preG);
+      if(dontSimplify) {
+        curve.add(recG, preG);
+      }
+      else {
+        curve.addAndSimplify(recG, preG);
+      }
       // add the slice
       acc += (calcSliceArea(prevrecG, recG, prevpreG, preG));
     }
@@ -242,9 +254,6 @@ public class PRGCEvaluation implements ScoreEvaluation {
         recG = 1.;
         preG = 0.;
       }
-
-      // the original implementation adds y = 0 crosses as well
-
       // add the slice
       acc += (calcSliceArea(prevrecG, recG, prevpreG, preG));
     }
