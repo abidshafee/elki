@@ -38,10 +38,10 @@ import elki.utilities.optionhandling.Parameterizer;
  *
  */
 @Reference(authors = "P. Flach and M. Knull", //
-    title = "Precision-Recall-Gain Curves: PR Analysis Done Right", //
-    booktitle = "Advances in Neural Information Processing Systems 28 (NIPS 2015)", //
-    url = "https://papers.nips.cc/paper/5867-precision-recall-gain-curves-pr-analysis-done-right", //
-    bibkey = "")
+    title = "Precision-Recall-Gain Curves: {PR} Analysis Done Right", //
+    booktitle = "Neural Information Processing Systems (NIPS 2015)", //
+    url = "http://papers.nips.cc/paper/5867-precision-recall-gain-curves-pr-analysis-done-right", //
+    bibkey = "DBLP:conf/nips/FlachK15")
 public class PRGCEvaluation implements ScoreEvaluation {
   /**
    * Static instance
