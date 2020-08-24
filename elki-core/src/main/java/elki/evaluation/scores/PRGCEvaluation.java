@@ -62,12 +62,12 @@ public class PRGCEvaluation implements ScoreEvaluation {
   public static PRGCurve materializePRGC(Adapter adapter) {
     PRGCurve curve = new PRGCurve();
     int pos = 0, rank = 0;
-    double recG = .0, preG = .0;
+    double recG = 0.0, preG = 0.0;
     int amountPositiveIDs = adapter.numPositive();
     int posnotfound = amountPositiveIDs;
     boolean recallPositive = false;
     double pi = amountPositiveIDs / (double) adapter.numTotal();
-    double acc = .0;
+    double acc = 0.0;
 
     while(adapter.valid()) {
       final int prevpos = pos, prevrank = rank;
@@ -87,18 +87,19 @@ public class PRGCEvaluation implements ScoreEvaluation {
       }
 
       final int newpos = pos - prevpos;
+      final int newneg = (rank - prevrank) - newpos;
       posnotfound -= newpos;
       // pos == 0 means that auc is infinite and not point is printed anyways
       if(pos == 0) {
         continue;
       }
-      recG = 1 - (pi / (1 - pi)) * (posnotfound / (double) pos);
-      preG = 1 - (pi / (1 - pi)) * ((rank - pos) / (double) pos);
+      recG = 1.0 - (pi / (1 - pi)) * (posnotfound / (double) pos);
+      preG = 1.0 - (pi / (1 - pi)) * ((rank - pos) / (double) pos);
 
       // detect first positive incident
-      if(!recallPositive && recG >= 0) {
+      if(!recallPositive && recG >= 0.0) {
         // check if the new point is directly on 0
-        if(recG == 0) {
+        if(recG == 0.0) {
           // this creates no slice
           curve.addAndSimplify(recG, preG);
           recallPositive = true;
@@ -108,15 +109,16 @@ public class PRGCEvaluation implements ScoreEvaluation {
         // this seems to not yield recG = 0 but something close.
 
         // taken from the original implementation (see citation)
-        double alpha = .5;
+        double alpha = 0.5;
         if(newpos > 0) {
           alpha = (amountPositiveIDs * pi - prevpos) / newpos;
         }
         // new = pre + delta*alhpa
         double ttp = prevpos + alpha * newpos;
-        double tfp = (prevrank - prevpos) + alpha * (prevrank - prevpos);
-        prevpreG = 1. - (amountPositiveIDs / (double) (adapter.numTotal() - amountPositiveIDs)) * (tfp / ttp);
-        prevrecG = .0;
+        double tfp = (prevrank - prevpos) + alpha * newneg;
+
+        prevpreG = 1.0 - (amountPositiveIDs / (double) (adapter.numTotal() - amountPositiveIDs)) * (tfp / ttp);
+        prevrecG = 0.0;
 
         curve.addAndSimplify(prevrecG, prevpreG);
         curve.addAndSimplify(recG, preG);
@@ -132,15 +134,15 @@ public class PRGCEvaluation implements ScoreEvaluation {
       // check trailing point
       if(rank == adapter.numTotal()) {
         // fix possible floating point errors
-        recG = 1.;
-        preG = 0.;
+        recG = 1.0;
+        preG = 0.0;
       }
 
       // the original implementation adds y = 0 crosses as well
       // also taken from original impl.
       if(preG * prevpreG < 0) {
         double x = prevrecG + (-prevpreG) / (preG - prevpreG) * (recG - prevrecG);
-        double alpha = .5;
+        double alpha = 0.5;
         if(newpos > 0) {
           alpha = (amountPositiveIDs * amountPositiveIDs / (adapter.numTotal() - (adapter.numTotal() - amountPositiveIDs) * x) - prevpos) / newpos;
         }
@@ -152,11 +154,11 @@ public class PRGCEvaluation implements ScoreEvaluation {
         double tfn = amountPositiveIDs - ttp;
         double temprecG = 1. - (amountPositiveIDs / (double) (adapter.numTotal() - amountPositiveIDs)) * (tfn / ttp);
 
-        curve.addAndSimplify(temprecG, 0);
-        acc += calcSliceArea(prevrecG, temprecG, prevpreG, 0);
+        curve.addAndSimplify(temprecG, 0.0);
+        acc += calcSliceArea(prevrecG, temprecG, prevpreG, 0.0);
 
         dontSimplify = true;
-        prevpreG = 0;
+        prevpreG = 0.0;
         prevrecG = temprecG;
       }
       // add the new point
@@ -185,12 +187,12 @@ public class PRGCEvaluation implements ScoreEvaluation {
   private static double computePRGAURC(Adapter adapter) {
 
     int pos = 0, rank = 0;
-    double recG = .0, preG = .0;
+    double recG = 0.0, preG = 0.0;
     int amountPositiveIDs = adapter.numPositive();
     int posnotfound = amountPositiveIDs;
     boolean recallPositive = false;
     double pi = amountPositiveIDs / (double) adapter.numTotal();
-    double acc = .0;
+    double acc = 0.0;
 
     while(adapter.valid()) {
       final int prevpos = pos, prevrank = rank;
@@ -214,13 +216,13 @@ public class PRGCEvaluation implements ScoreEvaluation {
       if(pos == 0) {
         continue;
       }
-      recG = 1 - (pi / (1 - pi)) * (posnotfound / (double) pos);
-      preG = 1 - (pi / (1 - pi)) * ((rank - pos) / (double) pos);
+      recG = 1.0 - (pi / (1 - pi)) * (posnotfound / (double) pos);
+      preG = 1.0 - (pi / (1 - pi)) * ((rank - pos) / (double) pos);
 
       // detect first positive incident
-      if(!recallPositive && recG >= 0) {
+      if(!recallPositive && recG >= 0.0) {
         // check if the new point is directly on 0
-        if(recG == 0) {
+        if(recG == 0.0) {
           // this creates no slice
           recallPositive = true;
           continue;
@@ -229,15 +231,15 @@ public class PRGCEvaluation implements ScoreEvaluation {
         // this seems to not yield recG = 0 but something close.
 
         // taken from the original implementation (see citation)
-        double alpha = .5;
+        double alpha = 0.5;
         if(newpos > 0) {
           alpha = (amountPositiveIDs * pi - prevpos) / newpos;
         }
         // new = pre + delta*alhpa
         double ttp = prevpos + alpha * newpos;
         double tfp = (prevrank - prevpos) + alpha * (prevrank - prevpos);
-        prevpreG = 1. - (amountPositiveIDs / (double) (adapter.numTotal() - amountPositiveIDs)) * (tfp / ttp);
-        prevrecG = .0;
+        prevpreG = 1.0 - (amountPositiveIDs / (double) (adapter.numTotal() - amountPositiveIDs)) * (tfp / ttp);
+        prevrecG = 0.0;
 
         acc += (calcSliceArea(prevrecG, recG, prevpreG, preG));
 
@@ -251,8 +253,8 @@ public class PRGCEvaluation implements ScoreEvaluation {
       // check trailing point
       if(rank == adapter.numTotal()) {
         // fix possible floating point errors
-        recG = 1.;
-        preG = 0.;
+        recG = 1.0;
+        preG = 0.0;
       }
       // add the slice
       acc += (calcSliceArea(prevrecG, recG, prevpreG, preG));
@@ -261,12 +263,12 @@ public class PRGCEvaluation implements ScoreEvaluation {
   }
 
   private static double calcSliceArea(double prevRG, double rG, double prevPG, double pG) {
-    return (rG - prevRG) * ((prevPG + pG) / 2.);
+    return (rG - prevRG) * ((prevPG + pG) / 2.0);
   }
 
   @Override
   public double expected(int pos, int all) {
-    return .0;
+    return 0.0;
   }
 
   public static class PRGCurve extends XYCurve {

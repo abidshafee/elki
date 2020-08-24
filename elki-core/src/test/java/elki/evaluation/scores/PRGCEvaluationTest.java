@@ -44,7 +44,7 @@ public class PRGCEvaluationTest {
 
     final ModifiableDoubleDBIDList distances = DBIDUtil.newDistanceDBIDList();
     // negative x values are ignored at calculation, hence 3 is our starting
-    // point
+    // point. The algorithm also creates a point at x = 0
     // Starting point: ................................ 0.0,1.0 ++
     distances.add(0.0, DBIDUtil.importInteger(1)); // . -0.4,1.0 --
     distances.add(1.0, DBIDUtil.importInteger(2)); // . -0.875,1.0 ++
